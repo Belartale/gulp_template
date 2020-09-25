@@ -16,6 +16,7 @@ let path = {
     js: project_folder + "/js/",
     img: project_folder + "/img/",
     fonts: project_folder + "/fonts/",
+    plugins: project_folder + "/plugins/",
   },
   src: {
     pug: source_folder + "/*.pug",
@@ -24,6 +25,7 @@ let path = {
     js: source_folder + "/js/script.js",
     img: source_folder + "/img/**/*.{jpg,png,svg,gif,ico,webp}",
     fonts: source_folder + "/fonts/*.ttf",
+    plugins: source_folder + "/plugins/**/*.*",
   },
   watch: {
     pug: source_folder + "/**/*.pug",
@@ -31,6 +33,7 @@ let path = {
     css: source_folder + "/scss/**/*.scss",
     js: source_folder + "/js/**/*.js",
     img: source_folder + "/img/**/*.{jpg,png,svg,gif,ico,webp}",
+    plugins: source_folder + "/plugins/**/*.*",
   },
   clean: "./" + project_folder + "/",
 };
@@ -68,6 +71,13 @@ function browserSync(params) {
     port: 3000,
     notify: false,
   });
+}
+
+function plugins() {
+  // src(path.src.plugins).pipe(dest(path.build.plugins));
+  return src(path.src.plugins)
+    .pipe(dest(path.build.plugins))
+    .pipe(browsersync.stream());
 }
 
 function funPug() {
@@ -150,12 +160,12 @@ function images() {
     .pipe(browsersync.stream());
 }
 
-function fonts(params) {
+function fonts() {
   src(path.src.fonts).pipe(ttf2woff()).pipe(dest(path.build.fonts));
   return src(path.src.fonts).pipe(ttf2woff2()).pipe(dest(path.build.fonts));
 }
 
-gulp.task("otf2ttf", function () {
+gulp.task("font", function () {
   return gulp([source_folder + "/fonts/*.otf"])
     .pipe(
       fonter({
@@ -165,8 +175,8 @@ gulp.task("otf2ttf", function () {
     .pipe(dest(source_folder + "/fonts/"));
 });
 
-gulp.task("svgSprite", function () {
-  return gulp([source_folder + "/iconsprite/*.scg"])
+gulp.task("svg", function () {
+  return gulp([source_folder + "/iconsprite/*.svg"])
     .pipe(
       svgSprite({
         mode: {
@@ -216,21 +226,23 @@ function watchFiles(params) {
   gulp.watch([path.watch.css], css);
   gulp.watch([path.watch.js], js);
   gulp.watch([path.watch.img], images);
+  gulp.watch([path.watch.plugins], plugins);
 }
 
 function clean(params) {
   return del(path.clean);
 }
 
-//
-
 let build = gulp.series(
   clean,
   funPug,
-  gulp.parallel(css, html, js, images, fonts)
+  plugins,
+  gulp.parallel(css, html, js, images, fonts),
+  fontsStyle
 ); //before
 let watch = gulp.parallel(build, browserSync, watchFiles); //after
 
+exports.plugins = plugins;
 exports.fontsStyle = fontsStyle;
 exports.fonts = fonts;
 exports.images = images;
