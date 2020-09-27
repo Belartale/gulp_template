@@ -6,5 +6,7 @@ This repository for gulp template (PUG, SCSS, JS).
 - if problems: `npm audit fix` to fix them, or `npm audit` for details
 
 Tutorial on installation:
+
 1. npm i
 2. if error in console to npm audit fix
+3. npm install webp-converter@2.2.3 --save-dev
