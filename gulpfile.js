@@ -3,8 +3,8 @@
 
 // npm i -D gulp-
 
-let project_folder = require("path").basename(__dirname);
-let source_folder = "#src";
+let project_folder = "dist"; //require("path").basename(__dirname);
+let source_folder = "src"; //"#src";
 
 let fs = require("fs");
 
@@ -21,18 +21,22 @@ let path = {
 	src: {
 		pug: source_folder + "/*.pug",
 		html: [source_folder + "/*.html", "!" + source_folder + "/-*.html"],
-		css: source_folder + "/{scss, css}/{index, style}.scss",
+		//! 	css: source_folder + "/{scss, css}/{index, style}.scss",
+		css: source_folder + "/{sass, scss, css}/{index, style}.{sass, scss, css}",
 		js: source_folder + "/js/{index, script, main}.js",
-		img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
+		//! 	img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
+		img: source_folder + "/{img, images}/**/*.{jpg, png, svg, gif, ico, webp}",
 		fonts: source_folder + "/fonts/*.ttf",
 		plugins: source_folder + "/plugins/**/*.*",
 	},
 	watch: {
 		pug: source_folder + "/**/*.pug",
 		html: source_folder + "/**/*.html",
-		css: source_folder + "/{scss, css}/**/*.scss",
+		//! css: source_folder + "/{scss, css}/**/*.scss",
+		css: source_folder + "/{sass, scss, css}/**/*.{sass, scss, css}",
 		js: source_folder + "/js/**/*.js",
-		img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
+		//! img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
+		img: source_folder + "/{img, images}/**/*.{jpg, png, svg, gif, ico, webp}",
 		plugins: source_folder + "/plugins/**/*.*",
 	},
 	clean: "./" + project_folder + "/",
@@ -117,8 +121,17 @@ function css() {
 
 		.pipe(dest(path.build.css))
 		.pipe(clean_css())
-		.pipe(dest(path.build.css))
+		.pipe(
+			rename({
+				extname: ".min.css",
+			})
+		)
 		.pipe(browsersync.stream());
+
+	// .pipe(dest(path.build.css))
+	// .pipe(clean_css())
+	// .pipe(dest(path.build.css))
+	// .pipe(browsersync.stream());
 
 	// .pipe(dest(path.build.css))
 	// .pipe(clean_css())
@@ -159,7 +172,7 @@ function images() {
 				progressive: true,
 				svgPlugins: [{ removeViewBox: false }],
 				interlaced: true,
-				optimizationLevel: 3, // 0-7
+				optimizationLevel: 3, //todo 0-7
 			})
 		)
 		.pipe(dest(path.build.img))
@@ -188,7 +201,7 @@ gulp.task("s", function () {
 				mode: {
 					stack: {
 						sprite: "../icons/icons.svg",
-						//example: true,
+						//? example: true,
 					},
 				},
 			})
