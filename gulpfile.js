@@ -55,8 +55,8 @@ let { src, dest } = require("gulp"),
 	fileInclude = require("gulp-file-include"), // include
 	autoprefixer = require("gulp-autoprefixer"), // добавление префиксов для свойств
 	group_media = require("gulp-group-css-media-queries"), // медиа в кучу и в конец
-	clean_css = require("gulp-clean-css"), // минимизация css
-	rename = require("gulp-rename"), // извенить имя
+	// clean_css = require("gulp-clean-css"), // минимизация css
+	rename = require("gulp-rename"), // извенить имя //todo заменить на gulp-concat
 	uglify = require("gulp-uglify-es").default, // минимизация js
 	imagemin = require("gulp-imagemin"), // сжатие картинок
 	webp = require("gulp-webp"), // формат webp
@@ -93,6 +93,7 @@ function funPug() {
 				pretty: true,
 			})
 		)
+		.pipe(webphtml())
 		.pipe(dest(source_folder))
 		.pipe(browsersync.stream());
 }
@@ -109,19 +110,19 @@ function css() {
 	return src(path.src.css)
 		.pipe(
 			scss({
-				outputStyle: "expanded",
+				outputStyle: "compressed",
 			})
 		)
 		.pipe(group_media())
 		.pipe(
 			autoprefixer({
 				overrideBrowserslist: ["last 5 versions"],
+				grid: true,
 				cascade: false,
 			})
 		)
 		.pipe(webpcss())
 
-		.pipe(clean_css())
 		.pipe(
 			rename({
 				extname: ".min.css",
