@@ -9,6 +9,12 @@ let source_folder = "src"; //"#src";
 let fs = require("fs");
 
 //! file paths
+
+let pages = "pages";
+let style = "scss";
+let styleType = "scss";
+let JS = "index";
+
 let path = {
 	build: {
 		html: project_folder + "/",
@@ -21,22 +27,18 @@ let path = {
 	src: {
 		pug: source_folder + "/*.pug",
 		html: [source_folder + "/*.html", "!" + source_folder + "/-*.html"],
-		//! 	css: source_folder + "/{scss, css}/{index, style}.scss",
-		css: source_folder + "/{sass, scss, css}/{index, style}.{sass, scss, css}",
-		js: source_folder + "/js/{index, script, main}.js",
-		//! 	img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
-		img: source_folder + "/{img, images}/**/*.{jpg, png, svg, gif, ico, webp}",
+		css: source_folder + `/${style}/index.${styleType}`,
+		js: source_folder + `/js/${JS}.js`,
+		img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
 		fonts: source_folder + "/fonts/*.ttf",
 		plugins: source_folder + "/plugins/**/*.*",
 	},
 	watch: {
-		pug: source_folder + "/**/*.pug",
-		html: source_folder + "/**/*.html",
-		//! css: source_folder + "/{scss, css}/**/*.scss",
-		css: source_folder + "/{sass, scss, css}/**/*.{sass, scss, css}",
+		pug: source_folder + `/${pages}/**/*.pug`,
+		html: source_folder + `/${pages}/**/*.html`,
+		css: source_folder + `/${style}/**/*.${styleType}`,
 		js: source_folder + "/js/**/*.js",
-		//! img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
-		img: source_folder + "/{img, images}/**/*.{jpg, png, svg, gif, ico, webp}",
+		img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
 		plugins: source_folder + "/plugins/**/*.*",
 	},
 	clean: "./" + project_folder + "/",
@@ -119,35 +121,19 @@ function css() {
 		)
 		.pipe(webpcss())
 
-		.pipe(dest(path.build.css))
 		.pipe(clean_css())
 		.pipe(
 			rename({
 				extname: ".min.css",
 			})
 		)
+		.pipe(dest(path.build.css))
 		.pipe(browsersync.stream());
-
-	// .pipe(dest(path.build.css))
-	// .pipe(clean_css())
-	// .pipe(dest(path.build.css))
-	// .pipe(browsersync.stream());
-
-	// .pipe(dest(path.build.css))
-	// .pipe(clean_css())
-	// .pipe(
-	//   rename({
-	//     extname: ".min.css",
-	//   })
-	// )
-	// .pipe(dest(path.build.css))
-	// .pipe(browsersync.stream());
 }
 
 function js() {
 	return src(path.src.js)
 		.pipe(fileInclude())
-		.pipe(dest(path.build.js))
 		.pipe(uglify())
 		.pipe(
 			rename({
@@ -231,7 +217,7 @@ function fontsStyle(params) {
 					fontname = fontname[0];
 					if (c_fontname != fontname) {
 						fs.appendFile(
-							source_folder + "/scss/fonts.scss",
+							`${source_folder}/${style}/fonts.scss`,
 							'@include font("' +
 								fontname +
 								'", "' +
