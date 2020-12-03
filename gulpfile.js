@@ -1,8 +1,6 @@
 // @@include("name")
 // files from -name.html don't save in folder "dist"
 
-// npm i -D gulp-
-
 let project_folder = "dist"; //require("path").basename(__dirname);
 let source_folder = "src"; //"#src";
 
@@ -10,38 +8,37 @@ let fs = require("fs");
 
 //! file paths
 
-let pages = "pages";
 let style = "scss";
 let styleType = "scss";
 let JS = "index";
 
 let path = {
 	build: {
-		html: project_folder + "/",
-		css: project_folder + "/css/",
-		js: project_folder + "/js/",
-		img: project_folder + "/img/",
-		fonts: project_folder + "/fonts/",
-		plugins: project_folder + "/plugins/",
+		html: `${project_folder}/`,
+		css: `${project_folder}/css/`,
+		js: `${project_folder}/js/`,
+		img: `${project_folder}/img/`,
+		fonts: `${project_folder}/fonts/`,
+		plugins: `${project_folder}/plugins/`,
 	},
 	src: {
-		pug: source_folder + "/*.pug",
-		html: [source_folder + "/*.html", "!" + source_folder + "/-*.html"],
-		css: source_folder + `/${style}/index.${styleType}`,
-		js: source_folder + `/js/${JS}.js`,
-		img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
-		fonts: source_folder + "/fonts/*.ttf",
-		plugins: source_folder + "/plugins/**/*.*",
+		pug: `${source_folder}/*.pug`,
+		html: [`${source_folder}/*.html`, `!${source_folder}/-*.html`],
+		css: `${source_folder}/${style}/index.${styleType}`,
+		js: `${source_folder}/js/${JS}.js`,
+		img: `${source_folder}/img/**/*.{jpg, png, svg, gif, ico, webp}`,
+		fonts: `${source_folder}/fonts/*.ttf`,
+		plugins: `${source_folder}/plugins/**/*.*`,
 	},
 	watch: {
-		pug: source_folder + `/${pages}/**/*.pug`,
-		html: source_folder + `/${pages}/**/*.html`,
-		css: source_folder + `/${style}/**/*.${styleType}`,
-		js: source_folder + "/js/**/*.js",
-		img: source_folder + "/img/**/*.{jpg, png, svg, gif, ico, webp}",
-		plugins: source_folder + "/plugins/**/*.*",
+		pug: `${source_folder}/**/*.pug`,
+		html: `${source_folder}/**/*.html`,
+		css: `${source_folder}/${style}/**/*.${styleType}`,
+		js: `${source_folder}/js/**/*.js`,
+		img: `${source_folder}/img/**/*.{jpg, png, svg, gif, ico, webp}`,
+		plugins: `${source_folder}/plugins/**/*.*`,
 	},
-	clean: "./" + project_folder + "/",
+	clean: `./${project_folder}/`,
 };
 
 //todo variables
@@ -55,7 +52,6 @@ let { src, dest } = require("gulp"),
 	fileInclude = require("gulp-file-include"), // include
 	autoprefixer = require("gulp-autoprefixer"), // добавление префиксов для свойств
 	group_media = require("gulp-group-css-media-queries"), // медиа в кучу и в конец
-	// clean_css = require("gulp-clean-css"), // минимизация css
 	rename = require("gulp-rename"), // извенить имя //todo заменить на gulp-concat
 	uglify = require("gulp-uglify-es").default, // минимизация js
 	imagemin = require("gulp-imagemin"), // сжатие картинок
@@ -67,6 +63,9 @@ let { src, dest } = require("gulp"),
 	ttf2woff2 = require("gulp-ttf2woff2"), //
 	fonter = require("gulp-fonter"),
 	purgecss = require("gulp-purgecss"); //удаление лишних слассов
+// clean_css = require("gulp-clean-css"), // минимизация css
+
+// "gulp-clean-css": "^4.3.0",
 
 //todo function
 
@@ -108,12 +107,13 @@ function html() {
 
 function css() {
 	return src(path.src.css)
+		.pipe(scss())
+		.pipe(group_media())
 		.pipe(
 			scss({
 				outputStyle: "compressed",
 			})
 		)
-		.pipe(group_media())
 		.pipe(
 			autoprefixer({
 				overrideBrowserslist: ["last 5 versions"],
