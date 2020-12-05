@@ -1,5 +1,5 @@
 // @@include("name")
-// files from -name.html don't save in folder "dist"
+// files from _name.html don't save in folder "dist"
 
 let project_folder = "dist"; //require("path").basename(__dirname);
 let source_folder = "src"; //"#src";
@@ -11,6 +11,7 @@ let fs = require("fs");
 let style = "scss";
 let styleType = "scss";
 let JS = "index";
+let imgTypes = "{jpg, png, svg, gif, ico, webp}";
 
 let path = {
 	build: {
@@ -22,11 +23,11 @@ let path = {
 		plugins: `${project_folder}/plugins/`,
 	},
 	src: {
-		pug: `${source_folder}/*.pug`,
-		html: [`${source_folder}/*.html`, `!${source_folder}/-*.html`],
+		pug: `${source_folder}/**/*.pug`,
+		html: [`${source_folder}/**/.html`, `!${source_folder}/_*.html`],
 		css: `${source_folder}/${style}/index.${styleType}`,
 		js: `${source_folder}/js/${JS}.js`,
-		img: `${source_folder}/img/**/*.{jpg, png, svg, gif, ico, webp}`,
+		img: `${source_folder}/img/**/*.${imgTypes}`,
 		fonts: `${source_folder}/fonts/*.ttf`,
 		plugins: `${source_folder}/plugins/**/*.*`,
 	},
@@ -35,7 +36,7 @@ let path = {
 		html: `${source_folder}/**/*.html`,
 		css: `${source_folder}/${style}/**/*.${styleType}`,
 		js: `${source_folder}/js/**/*.js`,
-		img: `${source_folder}/img/**/*.{jpg, png, svg, gif, ico, webp}`,
+		img: `${source_folder}/img/**/*.${imgTypes}`,
 		plugins: `${source_folder}/plugins/**/*.*`,
 	},
 	clean: `./${project_folder}/`,
@@ -93,7 +94,7 @@ function funPug() {
 			})
 		)
 		.pipe(webphtml())
-		.pipe(dest(source_folder))
+		.pipe(dest(path.build.html))
 		.pipe(browsersync.stream());
 }
 
