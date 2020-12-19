@@ -1,18 +1,23 @@
 // @@include("name")
-// files from _name.html don't save in folder "dist"
+// files from -name.html don't save in folder "dist"
+
+// npm i -D gulp-
+
+// task for start
+// gulp s == svg sprite
+// gulp f == font
+// gulp d == delete class inside css of html
 
 let project_folder = "dist"; //require("path").basename(__dirname);
-let source_folder = "src"; //"#src";
-
-let fs = require("fs");
+let source_folder = "app"; //"#src";
 
 //! file paths
 
-let style = "style";
-let styleType = "scss";
-let JS = "index";
-let imgTypes = "{jpg, png, svg, gif, ico, webp}";
-let doNotMake = "_";
+let style = `scss`;
+let styleType = `scss`;
+let JS = `index`;
+let imgTypes = `*`; //? `{jpg, png, svg, gif, ico, webp}`;
+let doNotMake = `_`;
 
 let path = {
 	build: {
@@ -60,20 +65,18 @@ let { src, dest } = require("gulp"),
 	fileInclude = require("gulp-file-include"), // include
 	autoprefixer = require("gulp-autoprefixer"), // добавление префиксов для свойств
 	group_media = require("gulp-group-css-media-queries"), // медиа в кучу и в конец
+	// clean_css = require("gulp-clean-css"), // минимизация css
 	rename = require("gulp-rename"), // извенить имя //todo заменить на gulp-concat
 	uglify = require("gulp-uglify-es").default, // минимизация js
 	imagemin = require("gulp-imagemin"), // сжатие картинок
 	webp = require("gulp-webp"), // формат webp
 	webphtml = require("gulp-webp-html"), // формат webp для html
 	webpcss = require("gulp-webpcss"), //! replace "gulp-webp-css"
-	svgSprite = require("gulp-svg-sprite"), //
+	svgSprite = require("gulp-svg-sprite"), //?
 	ttf2woff = require("gulp-ttf2woff"), // изменение формата шрифтов
 	ttf2woff2 = require("gulp-ttf2woff2"), //
 	fonter = require("gulp-fonter"),
 	purgecss = require("gulp-purgecss"); //удаление лишних слассов
-// clean_css = require("gulp-clean-css"), // минимизация css
-
-// "gulp-clean-css": "^4.3.0",
 
 //todo function
 
@@ -213,6 +216,8 @@ gulp.task("d", () => {
 		)
 		.pipe(dest(path.build.css));
 });
+
+let fs = require("fs");
 
 function fontsStyle(params) {
 	let file_content = fs.readFileSync(source_folder + "/scss/fonts.scss");
