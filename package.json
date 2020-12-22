@@ -1,10 +1,9 @@
 {
-  "name": "coffeein",
+  "name": "",
   "version": "1.0.0",
-  "description": "I learn bootstrap 5",
+  "description": "",
   "main": "index.js",
   "dependencies": {
-    "bootstrap": "^5.0.0-alpha2",
     "normalize.css": "^8.0.1"
   },
   "devDependencies": {
@@ -35,17 +34,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Belartale/coffeein.git"
+    "url": "git+https://github.com/Belartale"
   },
-  "keywords": [
-    "leaen",
-    "bootstrap",
-    "5"
-  ],
   "author": "belartale",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Belartale/coffeein/issues"
+    "url": "https://github.com/Belartale"
   },
-  "homepage": "https://github.com/Belartale/coffeein#readme"
+  "homepage": "https://github.com/Belartale"
 }
