@@ -9,13 +9,12 @@
 // gulp d == delete class inside css of html
 
 let project_folder = "dist"; //require("path").basename(__dirname);
-let source_folder = "app"; //"#src";
+let source_folder = "src"; //"#src";
 
 //! file paths
 
-let styleType = `style`;
 let style = `scss`;
-
+let styleType = `scss`;
 let JS = `index`;
 let imgTypes = `*`; //? `{jpg, png, svg, gif, ico, webp}`;
 let doNotMake = `_`;
@@ -39,10 +38,7 @@ let path = {
 			`!${source_folder}/**/${doNotMake}*.html`,
 		],
 		css: `${source_folder}/${style}/index.${styleType}`,
-		js: [
-			`${source_folder}/js/**/${JS}.js`,
-			`!${source_folder}/js/**/${doNotMake}${JS}.js`,
-		],
+		js: `${source_folder}/js/${JS}.js`,
 		img: [
 			`${source_folder}/img/**/*.${imgTypes}`,
 			`!${source_folder}/img/${doNotMake}**/*`,
@@ -149,11 +145,6 @@ function css() {
 				extname: ".min.css",
 			})
 		)
-		.pipe(
-			purgecss({
-				content: [`${path.build.html}index.html`],
-			})
-		)
 		.pipe(dest(path.build.css))
 		.pipe(browsersync.stream());
 }
@@ -192,6 +183,11 @@ function images() {
 		.pipe(browsersync.stream());
 }
 
+function fonts() {
+	src(path.src.fonts).pipe(ttf2woff()).pipe(dest(path.build.fonts));
+	return src(path.src.fonts).pipe(ttf2woff2()).pipe(dest(path.build.fonts));
+}
+
 function svgSprite() {
 	return src([source_folder + "/img/_sprite/*.svg"])
 		.pipe(
@@ -207,45 +203,31 @@ function svgSprite() {
 		.pipe(dest(path.build.img));
 }
 
-function fonts() {
-	src(path.src.fonts).pipe(ttf2woff()).pipe(dest(path.build.fonts));
-	return src(path.src.fonts).pipe(ttf2woff2()).pipe(dest(path.build.fonts));
-}
+gulp.task("s", svgSprite);
 
-gulp.task("f", function () {
-	return src([source_folder + "/fonts/*.otf"])
+function fontToTtf() {
+	return gulp([source_folder + "/fonts/*.otf"])
 		.pipe(
 			fonter({
 				format: ["ttf"],
 			})
 		)
 		.pipe(dest(source_folder + "/fonts/"));
-});
+}
 
-// gulp.task("s", function () {
-// 	return src([source_folder + "/img/_sprite/*.svg"])
-// 		.pipe(
-// 			svgSprite({
-// 				mode: {
-// 					stack: {
-// 						sprite: "../icons/icons.svg",
-// 						example: true,
-// 					},
-// 				},
-// 			})
-// 		)
-// 		.pipe(dest(path.build.img));
-// });
+gulp.task("f", fontToTtf);
 
-// gulp.task("d", () => {
-// 	return src([path.build.css + "*.css", path.build.css + "*.min.css"])
-// 		.pipe(
-// 			purgecss({
-// 				content: [path.build.html + "index.html"],
-// 			})
-// 		)
-// 		.pipe(dest(path.build.css));
-// });
+function cleanClassOfHtml() {
+	return src([path.build.css + "*.css", path.build.css + "*.min.css"])
+		.pipe(
+			purgecss({
+				content: [path.build.html + "index.html"],
+			})
+		)
+		.pipe(dest(path.build.css));
+}
+
+gulp.task("d", cleanClassOfHtml);
 
 let fs = require("fs");
 
@@ -279,7 +261,7 @@ function fontsStyle(params) {
 
 function cb() {}
 
-function watchFiles(params) {
+function watchFiles() {
 	gulp.watch([path.watch.pug], funPug);
 	gulp.watch([path.watch.html], html);
 	gulp.watch([path.watch.css], css);
