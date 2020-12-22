@@ -13,8 +13,9 @@ let source_folder = "app"; //"#src";
 
 //! file paths
 
+let styleType = `style`;
 let style = `scss`;
-let styleType = `scss`;
+
 let JS = `index`;
 let imgTypes = `*`; //? `{jpg, png, svg, gif, ico, webp}`;
 let doNotMake = `_`;
@@ -38,10 +39,19 @@ let path = {
 			`!${source_folder}/**/${doNotMake}*.html`,
 		],
 		css: `${source_folder}/${style}/index.${styleType}`,
-		js: `${source_folder}/js/${JS}.js`,
-		img: `${source_folder}/img/**/*.${imgTypes}`,
+		js: [
+			`${source_folder}/js/**/${JS}.js`,
+			`!${source_folder}/js/**/${doNotMake}${JS}.js`,
+		],
+		img: [
+			`${source_folder}/img/**/*.${imgTypes}`,
+			`!${source_folder}/img/${doNotMake}**/*`,
+		],
 		fonts: `${source_folder}/fonts/*.ttf`,
-		plugins: `${source_folder}/plugins/**/*.*`,
+		plugins: [
+			`${source_folder}/plugins/**/*.*`,
+			`!${source_folder}/plugins/${doNotMake}**/*.*`,
+		],
 	},
 	watch: {
 		pug: `${source_folder}/**/*.pug`,
@@ -72,7 +82,7 @@ let { src, dest } = require("gulp"),
 	webp = require("gulp-webp"), // формат webp
 	webphtml = require("gulp-webp-html"), // формат webp для html
 	webpcss = require("gulp-webpcss"), //! replace "gulp-webp-css"
-	svgSprite = require("gulp-svg-sprite"), //?
+	svgsprite = require("gulp-svg-sprite"), //?
 	ttf2woff = require("gulp-ttf2woff"), // изменение формата шрифтов
 	ttf2woff2 = require("gulp-ttf2woff2"), //
 	fonter = require("gulp-fonter"),
@@ -139,6 +149,11 @@ function css() {
 				extname: ".min.css",
 			})
 		)
+		.pipe(
+			purgecss({
+				content: [`${path.build.html}index.html`],
+			})
+		)
 		.pipe(dest(path.build.css))
 		.pipe(browsersync.stream());
 }
@@ -177,13 +192,28 @@ function images() {
 		.pipe(browsersync.stream());
 }
 
+function svgSprite() {
+	return src([source_folder + "/img/_sprite/*.svg"])
+		.pipe(
+			svgsprite({
+				mode: {
+					stack: {
+						sprite: "../icons/icons.svg",
+						example: true,
+					},
+				},
+			})
+		)
+		.pipe(dest(path.build.img));
+}
+
 function fonts() {
 	src(path.src.fonts).pipe(ttf2woff()).pipe(dest(path.build.fonts));
 	return src(path.src.fonts).pipe(ttf2woff2()).pipe(dest(path.build.fonts));
 }
 
 gulp.task("f", function () {
-	return gulp([source_folder + "/fonts/*.otf"])
+	return src([source_folder + "/fonts/*.otf"])
 		.pipe(
 			fonter({
 				format: ["ttf"],
@@ -192,30 +222,30 @@ gulp.task("f", function () {
 		.pipe(dest(source_folder + "/fonts/"));
 });
 
-gulp.task("s", function () {
-	return gulp([source_folder + "/iconsprite/*.svg"])
-		.pipe(
-			svgSprite({
-				mode: {
-					stack: {
-						sprite: "../icons/icons.svg",
-						//? example: true,
-					},
-				},
-			})
-		)
-		.pipe(dest(path.build.img));
-});
+// gulp.task("s", function () {
+// 	return src([source_folder + "/img/_sprite/*.svg"])
+// 		.pipe(
+// 			svgSprite({
+// 				mode: {
+// 					stack: {
+// 						sprite: "../icons/icons.svg",
+// 						example: true,
+// 					},
+// 				},
+// 			})
+// 		)
+// 		.pipe(dest(path.build.img));
+// });
 
-gulp.task("d", () => {
-	return src([path.build.css + "*.css", path.build.css + "*.min.css"])
-		.pipe(
-			purgecss({
-				content: [path.build.html + "index.html"],
-			})
-		)
-		.pipe(dest(path.build.css));
-});
+// gulp.task("d", () => {
+// 	return src([path.build.css + "*.css", path.build.css + "*.min.css"])
+// 		.pipe(
+// 			purgecss({
+// 				content: [path.build.html + "index.html"],
+// 			})
+// 		)
+// 		.pipe(dest(path.build.css));
+// });
 
 let fs = require("fs");
 
@@ -258,7 +288,7 @@ function watchFiles(params) {
 	gulp.watch([path.watch.plugins], plugins);
 }
 
-function clean(params) {
+function clean() {
 	return del(path.clean);
 }
 
@@ -266,7 +296,7 @@ let build = gulp.series(
 	clean,
 	funPug,
 	plugins,
-	gulp.parallel(css, html, js, images, fonts),
+	gulp.parallel(css, html, js, images, svgSprite, fonts),
 	fontsStyle
 ); //before
 let watch = gulp.parallel(build, browserSync, watchFiles); //after
@@ -276,6 +306,7 @@ exports.plugins = plugins;
 exports.fontsStyle = fontsStyle;
 exports.fonts = fonts;
 exports.images = images;
+exports.svgSprite = svgSprite;
 exports.js = js;
 exports.css = css;
 exports.html = html;
