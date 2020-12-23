@@ -9,7 +9,7 @@
 // gulp d == delete class inside css of html
 
 let project_folder = "dist"; //require("path").basename(__dirname);
-let source_folder = "src"; //"#src";
+let source_folder = "app"; //"#src";
 
 //! file paths
 
@@ -200,7 +200,8 @@ function svgSprite() {
 				},
 			})
 		)
-		.pipe(dest(path.build.img));
+		.pipe(dest(path.build.img))
+		.pipe(browsersync.stream());
 }
 
 gulp.task("s", svgSprite);
@@ -212,7 +213,8 @@ function fontToTtf() {
 				format: ["ttf"],
 			})
 		)
-		.pipe(dest(source_folder + "/fonts/"));
+		.pipe(dest(source_folder + "/fonts/"))
+		.pipe(browsersync.stream());
 }
 
 gulp.task("f", fontToTtf);
@@ -224,7 +226,8 @@ function cleanClassOfHtml() {
 				content: [path.build.html + "index.html"],
 			})
 		)
-		.pipe(dest(path.build.css));
+		.pipe(dest(path.build.css))
+		.pipe(browsersync.stream());
 }
 
 gulp.task("d", cleanClassOfHtml);
